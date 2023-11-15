@@ -24,3 +24,4 @@ namespace StartDataBase.Repositories
 			}
 		}
 	}
+}
