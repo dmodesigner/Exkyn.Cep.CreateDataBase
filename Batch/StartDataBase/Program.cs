@@ -1,7 +1,6 @@
 ﻿using Aspose.Cells;
+using StartDataBase.Repositories;
 using System.Data;
-using System.Data.SqlClient;
-using System.Transactions;
 
 internal class Program
 {
@@ -15,13 +14,16 @@ internal class Program
 			"Endereço.xlsx"
 		};
 
+		var insertRepository = new InsertRepository();
+
 		foreach (var file in files)
 		{
 			Console.WriteLine($"Inserindo os registros na tabela {file.Replace(".xlsx", "")}.");
 
 			var dt = ConvertExcelInDataTable(file);
 
-			InsertIntoInBase(dt);
+
+			insertRepository.InsertInDataBase(dt);
 		}
 
 		Console.WriteLine("Todos os registros foram inseridos com sucesso.");
@@ -52,24 +54,6 @@ internal class Program
 			dt.TableName = sheet.Name;
 
 			return dt;
-		}
-
-		void InsertIntoInBase(DataTable dt)
-		{
-			using (TransactionScope transectionScope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { Timeout = TimeSpan.FromMinutes(5) }))
-			{
-				SqlConnection connection = new SqlConnection(Environment.GetEnvironmentVariable("ConnectionStrings:CepBrasil"));
-				connection.Open();
-
-				using (SqlBulkCopy sql = new SqlBulkCopy(connection))
-				{
-					sql.DestinationTableName = dt.TableName;
-					sql.WriteToServer(dt);
-				}
-
-				transectionScope.Complete();
-				connection.Close();
-			}
 		}
 	}
 }
