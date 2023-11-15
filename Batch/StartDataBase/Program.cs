@@ -2,6 +2,7 @@
 using StartDataBase.Repositories;
 
 var insertRepository = new InsertRepository(); 
+var createBaseRepository = new CreateBaseRepository();
 
 var files = new List<string>
 {
@@ -12,7 +13,7 @@ var files = new List<string>
 };
 
 Console.WriteLine("Criando as tabelas do banco de dados.");
-new CreateBaseRepository().Start();
+createBaseRepository.Start();
 
 foreach (var file in files)
 {
@@ -23,4 +24,7 @@ foreach (var file in files)
 	insertRepository.InsertInDataBase(dt);
 }
 
-Console.WriteLine("Todos os registros foram inseridos com sucesso.");
+Console.WriteLine("Realizando os últimos ajustes.");
+createBaseRepository.End();
+
+Console.WriteLine("Todas as etapas foram realizadas com sucesso.");

@@ -144,5 +144,29 @@ namespace StartDataBase.Repositories
 				connection.Close();
 			}
 		}
+
+		public void End()
+		{
+			using (TransactionScope transectionScope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { Timeout = TimeSpan.FromMinutes(5) }))
+			{
+				SqlConnection connection = new SqlConnection(Base);
+
+				connection.Open();
+
+				var query = @"UPDATE Adresses SET ZipCode = REPLICATE('0',8 - LEN(CONVERT(VARCHAR,ZipCode))) + CONVERT(VARCHAR,ZipCode);
+								UPDATE Cities SET ZipCode = REPLICATE('0',8 - LEN(CONVERT(VARCHAR,ZipCode))) + CONVERT(VARCHAR,ZipCode) WHERE ZipCode IS NOT NULL;
+
+								CREATE INDEX idx_Adresses_ZipCode ON Adresses (ZipCode);
+								CREATE INDEX idx_Cities_ZipCode ON Cities (ZipCode);";
+
+				SqlCommand commandCreate = new SqlCommand(query.Trim(), connection);
+				commandCreate.ExecuteNonQuery();
+
+				commandCreate.Dispose();
+
+				transectionScope.Complete();
+				connection.Close();
+			}
+		}
 	}
 }
