@@ -11,6 +11,9 @@ var files = new List<string>
 	"Endereço.xlsx"
 };
 
+Console.WriteLine("Criando as tabelas do banco de dados.");
+new CreateBaseRepository().Start();
+
 foreach (var file in files)
 {
 	Console.WriteLine($"Inserindo os registros na tabela {file.Replace(".xlsx", "")}.");
